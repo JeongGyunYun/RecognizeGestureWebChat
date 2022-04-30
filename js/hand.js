@@ -1,5 +1,8 @@
 import * as recong from "./recong.js";
-import {HandPointEnum, isIndexFold, isInvalidGesture} from "./recong.js";
+import * as gestureUtil from "./gestureUtil.js";
+import * as backgroundUtil from "./backgroundUtil.js";
+
+
 
 
 const canvasElement = document.getElementsByClassName('output_canvas')[0];
@@ -21,53 +24,31 @@ function removeLandmarks(results) {
 }
 
 function onResults(results) {
-    removeLandmarks(results);
-    var alreadySetFilter = false;
-
-    if(results.leftHandLandmarks){
-        console.log("LeftHand:  " +isInvalidGesture(results.leftHandLandmarks))
-        if (isInvalidGesture(results.leftHandLandmarks)) {
-            recong.setBlurFilter();
-            alreadySetFilter = true;
-        } else {
-            recong.unSetBlurFilter();
-        }
-    }
-
-    if(results.rightHandLandmarks){
-        console.log("RightHand:  " +isInvalidGesture(results.rightHandLandmarks))
-        if(!alreadySetFilter){
-            if (isInvalidGesture(results.rightHandLandmarks)) {
-                recong.setBlurFilter();
-            } else {
-                recong.unSetBlurFilter();
-            }
-        }
-    }
-
-    if(!results.rightHandLandmarks && !results.leftHandLandmarks){
-        recong.unSetBlurFilter();
-    }
+    // removeLandmarks(results);
 
     canvasCtx.save();
     canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
 
     if(results.segmentationMask) {
-
         canvasCtx.drawImage(results.segmentationMask, 0, 0,
             canvasElement.width, canvasElement.height); //result.image or result.segmentationMask
 
-        // Only overwrite existing pixels.
-        canvasCtx.globalCompositeOperation = 'source-out';
-        // canvasCtx.fillStyle = '#FF888888';    //뒷 배경 채우기
-        let image = new Image();
-        image.src = '../js/cafe1.jpg'
-        canvasCtx.drawImage(image, 0, 0, canvasElement.width, canvasElement.height);
+        //뒷배경 설정시 이미지 교체
+        backgroundUtil.setBackgroundImage(canvasCtx, 1);
 
+        // invaild 한 행동이 존재할 때 Canvas 또는 Source-in에  blur 처리함
+        if (gestureUtil.checkTwoHandInvaildGesture(results)) {
+            gestureUtil.setSourceInBlurFilter(canvasCtx)
+            // gestureUtil.setCanvasBlurFilter();
+        } else{
+            // gestureUtil.unSetCanvasBlurFilter();
+            gestureUtil.unSetSourceInBlurFilter(canvasCtx);
+        }
 
-        //source-in set blur filter
-        canvasCtx.globalCompositeOperation = 'source-in';
-        canvasCtx.filter = 'blur(10px)';
+        // 양손이 없을 때는 blur 처리를 해제함
+        if(!gestureUtil.isHandInCamera(results)){
+            gestureUtil.unSetCanvasBlurFilter()
+        }
 
 
         // Only overwrite missing pixels.
@@ -75,18 +56,20 @@ function onResults(results) {
         canvasCtx.drawImage(
             results.image, 0, 0, canvasElement.width, canvasElement.height);
 
-
         canvasCtx.globalCompositeOperation = 'source-over';
+        gestureUtil.checkTwoHandHiGesture(canvasCtx, results);
+
     } else {
         canvasCtx.drawImage(
             results.image, 0, 0, canvasElement.width, canvasElement.height
         );
     }
 
-    drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS,
-        {color: '#00FF00', lineWidth: 4});
-    drawLandmarks(canvasCtx, results.poseLandmarks,
-        {color: '#FF0000', lineWidth: 2});
+
+    // drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS,
+    //     {color: '#00FF00', lineWidth: 4});
+    // drawLandmarks(canvasCtx, results.poseLandmarks,
+    //     {color: '#FF0000', lineWidth: 2});
     // drawConnectors(canvasCtx, results.faceLandmarks, FACEMESH_TESSELATION,
     //     {color: '#C0C0C070', lineWidth: 1});
     drawConnectors(canvasCtx, results.leftHandLandmarks, HAND_CONNECTIONS,
@@ -97,12 +80,17 @@ function onResults(results) {
         {color: '#00CC00', lineWidth: 5});
     drawLandmarks(canvasCtx, results.rightHandLandmarks,
         {color: '#FF0000', lineWidth: 2});
+
+    // drawConnectors(canvasCtx, results.faceLandmarks, FACEMESH_LIPS,
+    //     {color: '#FF888888'});
+
     canvasCtx.restore();
 }
 
 export const holistic = new Holistic({locateFile: (file) => {
         return `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`;
     }});
+
 holistic.setOptions({
     selfieMode: true,
     modelComplexity: 1,
@@ -111,8 +99,7 @@ holistic.setOptions({
     smoothSegmentation: true,
     refineFaceLandmarks: true,
     minDetectionConfidence: 0.5,
-    minTrackingConfidence: 0.5,
-    effect: 'mask',
+    minTrackingConfidence: 0.5
 
 
 });

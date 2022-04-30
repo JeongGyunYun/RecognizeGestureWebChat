@@ -45,25 +45,20 @@ export let HandPointEnum = Object.freeze({
 })
 
 export function isInvalidGesture(handResult) {
-    if(isMiddleFold(handResult) === false &&
+    return isMiddleFold(handResult) === false &&
         isRingFold(handResult) === true &&
         isPinkyFold(handResult) === true &&
-        isIndexFold(handResult) === true
-    ){
-        return true;
-    }
-    return false;
-}
-
-export function setBlurFilter() {
-    document.getElementsByClassName("output_canvas")[0].style.filter = "blur(15px)";
+        isIndexFold(handResult) === true;
 
 }
 
-export function unSetBlurFilter() {
-    document.getElementsByClassName("output_canvas")[0].style.filter = "none";
-}
+export function isHiGesture(handResult) {
+    return isMiddleFold(handResult) === false &&
+        isRingFold(handResult) === false &&
+        isPinkyFold(handResult) === false &&
+        isIndexFold(handResult) === false;
 
+}
 
 export function isThumbFold(handResult) {
     const markPoint = handResult[HandPointEnum.PINKY_MCP]
@@ -100,7 +95,9 @@ export function isPinkyFold(handResult) {
     return  calcFingerLen(p1, markPoint) < calcFingerLen(p2, markPoint);
 }
 
+export function isHandOnMouse(handResult, faceResult) {
 
+}
 
 function calcFingerLen(fPoint, sPoint){
     const xVal = Math.pow(fPoint.x - sPoint.x, 2);

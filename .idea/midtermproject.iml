@@ -8,5 +8,9 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="@mediapipe/camera_utils" level="application" />
+    <orderEntry type="library" name="@mediapipe/control_utils" level="application" />
+    <orderEntry type="library" name="@mediapipe/drawing_utils" level="application" />
+    <orderEntry type="library" name="@mediapipe/holistic" level="application" />
   </component>
 </module>
