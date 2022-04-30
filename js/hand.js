@@ -81,22 +81,29 @@ function onResults(results) {
         gestureUtil.checkTwoHandVictoryGesture(canvasCtx, results);
 
     } else {
-        canvasCtx.drawImage(
-            results.image, 0, 0, canvasElement.width, canvasElement.height
-        );
+        switch (backgroundSelBoxElement.options[backgroundSelBoxElement.selectedIndex].value) {
+            case "none":
+                canvasCtx.drawImage(
+                    results.image, 0, 0, canvasElement.width, canvasElement.height
+                );
+                break;
+
+            default:
+                backgroundUtil.noObjSetBackgroundImage(canvasCtx, backgroundSelBoxElement.options[backgroundSelBoxElement.selectedIndex].value);
+                break;
+        }
+
     }
 
-    drawConnectors(canvasCtx, results.leftHandLandmarks, HAND_CONNECTIONS,
-        {color: '#CC0000', lineWidth: 5});
-    drawLandmarks(canvasCtx, results.leftHandLandmarks,
-        {color: '#00FF00', lineWidth: 2});
-    drawConnectors(canvasCtx, results.rightHandLandmarks, HAND_CONNECTIONS,
-        {color: '#00CC00', lineWidth: 5});
-    drawLandmarks(canvasCtx, results.rightHandLandmarks,
-        {color: '#FF0000', lineWidth: 2});
-
-    // drawConnectors(canvasCtx, results.faceLandmarks, FACEMESH_LIPS,
-    //     {color: '#FF888888'});
+    // drawConnectors(canvasCtx, results.leftHandLandmarks, HAND_CONNECTIONS,
+    //     {color: '#CC0000', lineWidth: 5});
+    // drawLandmarks(canvasCtx, results.leftHandLandmarks,
+    //     {color: '#00FF00', lineWidth: 2});
+    // drawConnectors(canvasCtx, results.rightHandLandmarks, HAND_CONNECTIONS,
+    //     {color: '#00CC00', lineWidth: 5});
+    // drawLandmarks(canvasCtx, results.rightHandLandmarks,
+    //     {color: '#FF0000', lineWidth: 2});
+    //
 
     canvasCtx.restore();
 }
