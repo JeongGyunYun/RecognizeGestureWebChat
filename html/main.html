@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <title>화상 채팅</title>
     <meta charset="utf-8">
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
@@ -20,9 +21,19 @@
         }
     </script>
 
+    <script>
+        window.onload = function () {
+            document.getElementById('you').innerText = localStorage.getItem('nickname')
+        };
+
+    </script>
+
     <style>
         body {
-            background: #ff888888;
+            /*background: #ff888888;*/
+            background-image: url("../img/backgroud.jpg");
+            background-repeat: no-repeat;
+            background-size: cover;
         }
         .input_video {
             display: none;
@@ -79,7 +90,7 @@
 <body>
     <section>
         <article>
-            <div id="wrap" style="background-color: #ff888888;">
+            <div id="wrap">
                 <div style="background-color: white">
                     <video  class="input_video"></video>
                 </div>
@@ -95,8 +106,8 @@
                 </div>
             </div>
 
-            <br style="background-color: #ff888888">
-            <div class="button_box" style="background-color: #ff888888;">
+            <br>
+            <div class="button_box">
                 <div style="height: 100%;">
                     <select style="margin: auto 100px;" id="background">
                         <option value="none" selected> 배경 선택 </option>
@@ -127,10 +138,11 @@
                 </div>
 
                 <div style="margin: auto 100px;">
-                    <button type="button" onclick="location.href='#'" style="background-color: red; border-radius: 50%"><img src="../img/nosign.png"></button>
+                    <button type="button" onclick="location.href='login.html'" style="background-color: red; border-radius: 50%"><img src="../img/nosign.png"></button>
                     <br>
                     <label style="position: center"> 나가기</label>
                 </div>
+
             </div>
 
         </article>
