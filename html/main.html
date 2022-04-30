@@ -9,28 +9,135 @@
     <script type="module" src="../js/cam.js"></script>
     <script type="module" src="../js/hand.js"></script>
 
-    <style>
-        .input_video {
-            /*display: none;*/
-            transform: scale(-1, 1);
+    <script>
+        function isChecked(){
+            const isFlag = document.getElementById('blurCheckbox').checked
+            if (isFlag) {
+                document.getElementById('objectSel').disabled = false
+            } else {
+                document.getElementById('objectSel').disabled = true
+            }
+        }
+    </script>
 
+    <style>
+        body {
+            background: #ff888888;
+        }
+        .input_video {
+            display: none;
+            float: left;
+            padding: 15px;
+            transform: scale(-1, 1);
         }
 
         .output_canvas {
-            width: 720px;
-            height: 360px;
+            float: left;
+            padding: 5px;
             filter: none;
+            border: solid 4px black;
+            margin: 3px;
+            background-color: white;
         }
-        #output_text_canvas {
-            border: 1px;
+
+        .input_canvas {
+            float: left;
+            padding: 5px;
+            filter: none;
+            border: solid 4px black;
+            margin: 3px;
+            background-color: white;
         }
+
+        #wrap {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /*position: static;*/
+
+        }
+
+        #you, #other {
+            text-align: center;
+            font-size: x-large;
+            font-weight: bold;
+        }
+
+        .button_box {
+            clear: left;
+            display: flex;
+            justify-content: center;
+            border: black solid 5px;
+            align-items: center;
+            margin-right: 20px;
+
+        }
+
     </style>
 </head>
 
 <body>
-<div class="container">
-    <video  class="input_video"></video>
-    <canvas class="output_canvas" width="1280px" height="720px"></canvas>
+    <section>
+        <article>
+            <div id="wrap" style="background-color: #ff888888;">
+                <div style="background-color: white">
+                    <video  class="input_video"></video>
+                </div>
+
+                <div>
+                    <canvas class="output_canvas" id="inSrc" width="680" height="680"></canvas>
+                    <p id="you">Your Name</p>
+                </div>
+
+                <div>
+                    <canvas class="input_canvas" width="680" height="680"></canvas>
+                    <p id="other">Other Name</p>
+                </div>
+            </div>
+
+            <br style="background-color: #ff888888">
+            <div class="button_box" style="background-color: #ff888888;">
+                <div style="height: 100%;">
+                    <select style="margin: auto 100px;" id="background">
+                        <option value="none" selected> 배경 선택 </option>
+                        <option value="1">카페 배경1</option>
+                        <option value="2">카페 배경2</option>
+                        <option value="3">카페 배경3</option>
+                        <option value="4">바다 배경1</option>
+                        <option value="5">바다 배경2</option>
+                        <option value="6">바다 배경3</option>
+                        <option value="7">산 배경1</option>
+                        <option value="8">산 배경2</option>
+                    </select>
+                </div>
+
+
+                <div style="margin: auto 100px;">
+                    <label>
+                        <input type="checkbox" id="blurCheckbox" onclick="isChecked()"> 제스처 모자이크
+                    </label>
+                </div>
+
+
+                <div style="margin: auto 100px;">
+                    <select id="objectSel" disabled="true">
+                        <option value="all" selected>전체 모자이크</option>
+                        <option value="person">사람 모자이크</option>
+                    </select>
+                </div>
+
+                <div style="margin: auto 100px;">
+                    <button type="button" onclick="location.href='#'" style="background-color: red; border-radius: 50%"><img src="../img/nosign.png"></button>
+                    <br>
+                    <label style="position: center"> 나가기</label>
+                </div>
+            </div>
+
+        </article>
+    </section>
+
+
+
 
 </div>
 </body>

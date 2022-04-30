@@ -7,7 +7,9 @@ import * as backgroundUtil from "./backgroundUtil.js";
 
 const canvasElement = document.getElementsByClassName('output_canvas')[0];
 const canvasCtx = canvasElement.getContext('2d');
-
+const blurCheckboxElement = document.getElementById('blurCheckbox');
+const backgroundSelBoxElement = document.getElementById('background');
+const objectSelBoxElement = document.getElementById('objectSel');
 
 function removeElements(landmarks, elements) {
     for (const element of elements) {
@@ -34,21 +36,39 @@ function onResults(results) {
             canvasElement.width, canvasElement.height); //result.image or result.segmentationMask
 
         //뒷배경 설정시 이미지 교체
-        backgroundUtil.setBackgroundImage(canvasCtx, 1);
+        switch (backgroundSelBoxElement.options[backgroundSelBoxElement.selectedIndex].value) {
+            case "none":
+                backgroundUtil.setDEFBackgroundImage(canvasCtx, results);
+                break;
+
+            default:
+                backgroundUtil.setBackgroundImage(canvasCtx, backgroundSelBoxElement.options[backgroundSelBoxElement.selectedIndex].value);
+                break;
+        }
+
 
         // invaild 한 행동이 존재할 때 Canvas 또는 Source-in에  blur 처리함
-        if (gestureUtil.checkTwoHandInvaildGesture(results)) {
-            gestureUtil.setSourceInBlurFilter(canvasCtx)
-            // gestureUtil.setCanvasBlurFilter();
-        } else{
-            // gestureUtil.unSetCanvasBlurFilter();
-            gestureUtil.unSetSourceInBlurFilter(canvasCtx);
+        if(blurCheckboxElement.checked){
+            if (gestureUtil.checkTwoHandInvaildGesture(results)) {
+                if(objectSelBoxElement.options[objectSelBoxElement.selectedIndex].value === "all") {
+                    gestureUtil.setCanvasBlurFilter();
+                } else {
+                    gestureUtil.setSourceInBlurFilter(canvasCtx)
+                }
+            } else{
+                gestureUtil.unSetCanvasBlurFilter();
+                gestureUtil.unSetSourceInBlurFilter(canvasCtx);
+            }
+
+            // 양손이 없을 때는 blur 처리를 해제함
+            if(!gestureUtil.isHandInCamera(results)){
+                gestureUtil.unSetCanvasBlurFilter()
+            }
+        } else {
+            gestureUtil.unSetCanvasBlurFilter()
+            gestureUtil.unSetSourceInBlurFilter(canvasCtx)
         }
 
-        // 양손이 없을 때는 blur 처리를 해제함
-        if(!gestureUtil.isHandInCamera(results)){
-            gestureUtil.unSetCanvasBlurFilter()
-        }
 
 
         // Only overwrite missing pixels.
@@ -58,6 +78,7 @@ function onResults(results) {
 
         canvasCtx.globalCompositeOperation = 'source-over';
         gestureUtil.checkTwoHandHiGesture(canvasCtx, results);
+        gestureUtil.checkTwoHandVictoryGesture(canvasCtx, results);
 
     } else {
         canvasCtx.drawImage(
@@ -65,13 +86,6 @@ function onResults(results) {
         );
     }
 
-
-    // drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS,
-    //     {color: '#00FF00', lineWidth: 4});
-    // drawLandmarks(canvasCtx, results.poseLandmarks,
-    //     {color: '#FF0000', lineWidth: 2});
-    // drawConnectors(canvasCtx, results.faceLandmarks, FACEMESH_TESSELATION,
-    //     {color: '#C0C0C070', lineWidth: 1});
     drawConnectors(canvasCtx, results.leftHandLandmarks, HAND_CONNECTIONS,
         {color: '#CC0000', lineWidth: 5});
     drawLandmarks(canvasCtx, results.leftHandLandmarks,

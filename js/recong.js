@@ -57,7 +57,13 @@ export function isHiGesture(handResult) {
         isRingFold(handResult) === false &&
         isPinkyFold(handResult) === false &&
         isIndexFold(handResult) === false;
+}
 
+export function isVictoryGesture(handResult) {
+    return isMiddleFold(handResult) === false &&
+        isRingFold(handResult) === true &&
+        isPinkyFold(handResult) === true &&
+        isIndexFold(handResult) === false;
 }
 
 export function isThumbFold(handResult) {

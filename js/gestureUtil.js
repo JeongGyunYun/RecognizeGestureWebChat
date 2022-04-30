@@ -1,8 +1,11 @@
 import * as recong from "./recong.js";
-import {isHiGesture} from "./recong.js";
+import {isHiGesture, isVictoryGesture} from "./recong.js";
 const canvasElement = document.getElementsByClassName('output_canvas')[0];
-const hi_img = new Image();
-hi_img.src = "../img/image01.png";
+const hiImg = new Image();
+hiImg.src = "../img/image01.png";
+
+const victoryImg = new Image();
+victoryImg.src = "../img/image02.png";
 
 export function setCanvasBlurFilter() {
     document.getElementsByClassName("output_canvas")[0].style.filter = "blur(15px)";
@@ -55,11 +58,32 @@ export function checkTwoHandHiGesture(canvas, results) {
     }
 }
 
+
+export function checkTwoHandVictoryGesture(canvas, results) {
+    const rightHand = results.rightHandLandmarks;
+    const leftHand = results.leftHandLandmarks;
+
+    if (leftHand && isVictoryGesture(leftHand)) {
+        drawVictoryImage(canvas, leftHand)
+    }
+
+    if (rightHand && isVictoryGesture(rightHand)) {
+        drawVictoryImage(canvas, rightHand);
+    }
+}
+
 function drawHiImage(canvas, handResult){
-    canvas.drawImage(hi_img,
+    canvas.drawImage(hiImg,
         handResult[recong.HandPointEnum.MIDDLE_FINGER_TIP].x*canvasElement.width - 50,
         handResult[recong.HandPointEnum.MIDDLE_FINGER_TIP].y*canvasElement.height - 150,
         100, 100)
+}
+
+function drawVictoryImage(canvas, handResult){
+    canvas.drawImage(victoryImg,
+        handResult[recong.HandPointEnum.MIDDLE_FINGER_TIP].x*canvasElement.width - 100,
+        handResult[recong.HandPointEnum.MIDDLE_FINGER_TIP].y*canvasElement.height - 150,
+        150, 150)
 }
 
 export function isHandInCamera(results) {
