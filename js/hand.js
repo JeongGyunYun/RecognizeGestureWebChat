@@ -44,23 +44,37 @@ function onResults(results) {
             }
         }
     }
+
+    if(!results.rightHandLandmarks && !results.leftHandLandmarks){
+        recong.unSetBlurFilter();
+    }
+
     canvasCtx.save();
     canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
 
-    if(results.segmentationMask){
+    if(results.segmentationMask) {
 
         canvasCtx.drawImage(results.segmentationMask, 0, 0,
             canvasElement.width, canvasElement.height); //result.image or result.segmentationMask
 
         // Only overwrite existing pixels.
         canvasCtx.globalCompositeOperation = 'source-out';
-        canvasCtx.fillStyle = '#FF888888';    //뒷 배경 채우기
-        canvasCtx.fillRect(0, 0, canvasElement.width, canvasElement.height);
+        // canvasCtx.fillStyle = '#FF888888';    //뒷 배경 채우기
+        let image = new Image();
+        image.src = '../js/cafe1.jpg'
+        canvasCtx.drawImage(image, 0, 0, canvasElement.width, canvasElement.height);
+
+
+        //source-in set blur filter
+        canvasCtx.globalCompositeOperation = 'source-in';
+        canvasCtx.filter = 'blur(10px)';
+
 
         // Only overwrite missing pixels.
         canvasCtx.globalCompositeOperation = 'destination-atop';
         canvasCtx.drawImage(
             results.image, 0, 0, canvasElement.width, canvasElement.height);
+
 
         canvasCtx.globalCompositeOperation = 'source-over';
     } else {
